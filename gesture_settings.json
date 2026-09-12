@@ -1,0 +1,18 @@
+{
+  "camera_index": 0,
+  "camera_fps": 12,
+  "swipe_threshold": 0.13,
+  "swipe_window_seconds": 0.6,
+  "cooldown_seconds": 0.5,
+  "stationary_radius": 0.05,
+  "stationary_hold_seconds": 0.8,
+  "mouth_distance": 0.13,
+  "pip_width": 360,
+  "pip_height": 640,
+  "gesture_actions": {
+    "swipe_up": "next",
+    "swipe_down": "previous",
+    "stationary_hold": "toggle_play",
+    "finger_on_lips": "mute"
+  }
+}

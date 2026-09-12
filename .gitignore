@@ -1,0 +1,20 @@
+# Python virtual environment
+venv/
+env/
+ENV/
+.venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary and log files
+*.log
+.system_generated/
+scratch/
+
+# Operating system files
+Thumbs.db
+Desktop.ini
+.DS_Store
