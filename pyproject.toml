@@ -1,9 +1,43 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gesture-shorts"
+version = "0.2.0"
+description = "Hands-free vertical video navigation for YouTube Shorts, TikTok, and Instagram Reels"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+    { name = "nhaydaraliyev09-star", email = "nhaydaraliyev09@gmail.com" }
+]
+dependencies = [
+    "opencv-contrib-python>=4.8.0,<5.1.0",
+    "mediapipe>=0.10.0",
+    "pynput>=1.7.6",
+    "pillow>=9.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.4.0",
+]
+
+[project.scripts]
+gesture-shorts = "gesture_shorts.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["gesture_shorts*"]
+
 [tool.ruff]
 target-version = "py310"
 line-length = 100
 
 [tool.ruff.lint]
-ignore = ["W191"]
+select = ["E", "F", "W", "UP", "B", "I", "RUF"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
