@@ -18,3 +18,8 @@ scratch/
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# MediaPipe model binaries (downloaded on-demand with SHA-256 validation)
+*.task
+*.part
+

@@ -1,3 +1,8 @@
-opencv-python>=4.8
-mediapipe>=0.10
-pynput>=1.7
+# MediaPipe upstream depends on opencv-contrib-python.
+# Installing both opencv-python and opencv-contrib-python in the same environment
+# causes duplicate native symbols and OpenBLAS thread allocation failures.
+# We standardize on opencv-contrib-python to provide full OpenCV support with MediaPipe.
+opencv-contrib-python>=4.8.0,<5.1.0
+mediapipe>=0.10.0
+pynput>=1.7.6
+pillow>=9.0.0

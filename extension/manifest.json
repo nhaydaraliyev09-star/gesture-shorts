@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Gesture Shorts Bridge",
+  "version": "1.0.0",
+  "description": "Direct HTML5 video element control for YouTube Shorts, TikTok, and Instagram Reels via Gesture Shorts.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "*://*.youtube.com/*",
+    "*://*.tiktok.com/*",
+    "*://*.instagram.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Gesture Shorts Bridge"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.youtube.com/shorts/*",
+        "*://*.tiktok.com/*",
+        "*://*.instagram.com/reels/*",
+        "*://*.instagram.com/reel/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Gesture Shorts Bridge</title>
+  <style>
+    body {
+      width: 260px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 14px;
+      background: #111827;
+      color: #f3f4f6;
+    }
+    h2 {
+      font-size: 14px;
+      margin: 0 0 10px 0;
+      color: #60a5fa;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status {
+      font-size: 12px;
+      padding: 6px 8px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      font-weight: 500;
+      background: #1f2937;
+    }
+    .connected { color: #34d399; }
+    .disconnected { color: #f87171; }
+    label {
+      font-size: 11px;
+      color: #9ca3af;
+      display: block;
+      margin-bottom: 4px;
+    }
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px 8px;
+      border-radius: 4px;
+      border: 1px solid #374151;
+      background: #1f2937;
+      color: white;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+    button {
+      width: 100%;
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <h2>🎥 Gesture Shorts Bridge</h2>
+  <div id="status" class="status disconnected">● Disconnected</div>
+
+  <label for="port">WebSocket Port:</label>
+  <input type="number" id="port" value="8765">
+
+  <label for="token">Session Token:</label>
+  <input type="text" id="token" placeholder="Paste session token here">
+
+  <button id="save">Save & Connect</button>
+
+  <script src="popup.js"></script>
+</body>
+</html>
