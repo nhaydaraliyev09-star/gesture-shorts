@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Model Asset Management
+- **Untracked `*.task` Binaries from Git**: Removed large `*.task` MediaPipe model binaries (~11.5 MB) from git tracking in favor of verified on-demand download and local caching, keeping the git repository lightweight and fast to clone. Existing files on disk remain functional, and `.gitignore` prevents accidental commits of binary model assets.
+
 ### Phase 4: Optional Browser Bridge
 - **Local WebSocket Bridge Server**: Built a lightweight, secure RFC 6455 WebSocket server (`gesture_shorts/bridge.py`) running strictly on `127.0.0.1` using Python's standard library (no extra pip dependencies). Enforces random per-session token authentication and origin checks.
 - **Manifest V3 Browser Extension**: Created a minimal Chrome/Edge/Brave extension (`extension/`) that directly manipulates active `<video>` elements (play, pause, mute, scroll navigation) and streams actual playback and volume states back to the application.
