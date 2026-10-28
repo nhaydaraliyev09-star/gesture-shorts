@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Phase 3: New Features
+- **3.1 Window Focus Safety Guard**: Before injecting any keyboard shortcut, `WindowFocusChecker` inspects the active foreground window title (using `ctypes` on Windows, `osascript` on macOS, and `xdotool` on Linux X11). Gestures are suppressed with a status message ("Gesture ignored: browser not focused") unless the target platform (YouTube / TikTok / Instagram) is active. Configurable via `require_browser_focus` (default `true`).
+- **3.2 Activation Pose (Arm/Disarm)**: Added deliberate open-palm activation pose (held ~1.0 s) to toggle armed/disarmed states. When disarmed, all navigation gestures are safely disabled to prevent accidental triggers while talking or moving. Includes auto-disarm timer (`auto_disarm_seconds`, default 20 s) and mode selection (`activation_mode`: `"pose"` vs `"always"`).
+- **3.3 Camera Preview & Feedback Overlay**: Integrated mirrored live camera preview in the PiP canvas with landmark tracking circles, mouth proximity target, armed/disarmed badge, still-hold progress bar, and 1-second recognized action flash overlay. Added a privacy toggle ("Hide preview") and frame rate capping to keep CPU usage low.
+- **3.4 Conditional Face Landmarker Optimization**: Optimized face tracking by executing the face landmarker only when an index finger is detected in the upper 65% of the frame, with mouth position caching (5-frame TTL). Reduces face model invocations by up to 80% during normal playback navigation.
+- **3.5 Play/Mute State Tracking**: Removed guessing; next/previous operations set `is_playing = True`, status header displays `▶ Playing / ⏸ Paused` and `🔊 Unmuted / 🔇 Muted`, and events are reported transparently as "Toggled play/pause".
+- **3.6 Live Settings Dialog**: Added a comprehensive Tkinter configuration dialog with interactive sliders/entries for camera index, FPS, swipe threshold, hold time, cooldown, mouth distance, focus guard, activation mode, and a "Detect Cameras" helper. Supports live updates, saving to disk, and factory default reset.
+- **3.7 Platform Selection UI**: Platform selector buttons highlight the active feed and remember last selected platform across sessions.
+- **3.8 Platform Diagnostics & Permissions**: Added environment checks in `gesture_shorts.permissions` to detect Linux Wayland restrictions and explain macOS Accessibility/Input Monitoring requirements.
+
 ### Phase 2: Architecture, Tests & Tooling
 - **2.1 Package Modularization**: Split monolithic script into modular `gesture_shorts` package (`settings`, `recognizer`, `adapters`, `camera`, `ui`, `__main__`). Retained `gesture_control.py` as a backward-compatible thin shim. `gesture_shorts.recognizer` has zero dependencies on Tkinter, OpenCV, or MediaPipe.
 - **Indentation Refactor**: Converted repository from tab indentation to 4 spaces across all files.
