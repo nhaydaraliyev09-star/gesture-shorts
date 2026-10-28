@@ -266,6 +266,12 @@ class CameraWorker(threading.Thread):
         os.replace(part_path, dest_path)
         return dest_path
 
+    def _create_mp_image(self, frame: Any) -> Any:
+        return mp.Image(
+            image_format=mp.ImageFormat.SRGB,
+            data=cv2.cvtColor(frame, cv2.COLOR_BGR2RGB),
+        )
+
     def _detect_tasks_optimized(
         self,
         hands: Any,
@@ -273,10 +279,7 @@ class CameraWorker(threading.Thread):
         frame: Any,
     ) -> tuple[list[Any] | None, tuple[float, float] | None]:
         """Detect hands and conditionally detect face/mouth only when needed (Phase 3.4)."""
-        image = mp.Image(
-            image_format=mp.ImageFormat.SRGB,
-            data=cv2.cvtColor(frame, cv2.COLOR_BGR2RGB),
-        )
+        image = self._create_mp_image(frame)
         hand_result = hands.detect(image)
         landmarks = hand_result.hand_landmarks[0] if hand_result.hand_landmarks else None
 

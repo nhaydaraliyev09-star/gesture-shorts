@@ -134,6 +134,29 @@ Coordinates are normalized using the camera's aspect ratio:
 
 ---
 
+## 🌐 Optional: Browser Bridge Extension (Direct Video Control)
+
+By default, Gesture Shorts controls playback by simulating OS-level keyboard shortcuts (`pynput`) directed at the active browser window. For more precise control and real-time state feedback, you can optionally install the bundled Manifest V3 browser extension.
+
+### Why Use the Extension?
+- Directly accesses HTML5 `<video>` elements (`video.play()`, `video.pause()`, `video.muted`).
+- Reports true, un-guessed playback and mute status back to the desktop application.
+- Does not rely on keyboard focus.
+
+### Installation Instructions:
+1. Open Google Chrome, Microsoft Edge, or Brave and navigate to `chrome://extensions/`.
+2. Enable **Developer mode** (toggle in top right).
+3. Click **Load unpacked** and select the `extension/` directory from this repository.
+4. Click the **Gesture Shorts Bridge** extension icon in your browser toolbar to confirm connection to `127.0.0.1:8765`.
+5. When connected, the app automatically routes gestures through the extension, falling back to keystroke simulation if disconnected.
+
+### Security:
+- Bound strictly to `127.0.0.1` (never exposed externally).
+- Authenticated with a random per-session token.
+- Non-extension and non-localhost origins are rejected.
+
+---
+
 ## 🏗️ Architecture & Package Structure
 
 ```

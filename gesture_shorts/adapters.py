@@ -6,7 +6,7 @@ import subprocess
 import sys
 import webbrowser
 from collections.abc import Callable
-from typing import ClassVar
+from typing import Any, ClassVar
 
 try:
     from pynput.keyboard import Controller as KeyboardController
@@ -127,10 +127,12 @@ class PlatformAdapter:
         platform: str,
         notify: Callable[[str], None],
         focus_checker: WindowFocusChecker | None = None,
+        bridge: Any | None = None,
     ) -> None:
         self.platform = platform
         self.notify = notify
         self.focus_checker = focus_checker or WindowFocusChecker()
+        self.bridge = bridge
         self.is_playing: bool = True
         self.is_muted: bool = False
 
@@ -138,6 +140,13 @@ class PlatformAdapter:
         if self.platform in self.URLS:
             webbrowser.open(self.URLS[self.platform])
             self.notify(f"{self.platform} opened in browser")
+
+    def handle_extension_status(self, data: dict[str, Any]) -> None:
+        """Receive actual video element state from the browser extension."""
+        if "playing" in data and isinstance(data["playing"], bool):
+            self.is_playing = data["playing"]
+        if "muted" in data and isinstance(data["muted"], bool):
+            self.is_muted = data["muted"]
 
     def _send_key(self, key: object) -> bool:
         if _keyboard is None:
@@ -152,12 +161,30 @@ class PlatformAdapter:
             return False
 
     def perform(self, action: str, require_browser_focus: bool = True) -> bool:
+        # Phase 4: Use browser bridge if extension is connected
+        if self.bridge and getattr(self.bridge, "is_connected", False):
+            if self.bridge.send_action(action):
+                if action == "toggle_play":
+                    self.is_playing = not self.is_playing
+                    label = "Toggled play/pause"
+                elif action == "mute":
+                    self.is_muted = not self.is_muted
+                    label = "Toggled mute"
+                elif action == "next":
+                    label = "Next ▲"
+                elif action == "previous":
+                    label = "Previous ▼"
+                else:
+                    label = action.replace("_", " ").title()
+                self.notify(f"{label} (Bridge)")
+                return True
+
         if require_browser_focus:
             focused, reason = self.focus_checker.is_target_focused(self.platform)
             if not focused:
                 self.notify("Gesture ignored: browser not focused")
                 return False
-            if reason:  # e.g., one-time unsupported warning
+            if reason:
                 self.notify(reason)
 
         keys = self.KEY_MAP.get(self.platform, {})

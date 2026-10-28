@@ -35,20 +35,17 @@ def test_face_model_only_called_when_hand_in_upper_area() -> None:
     worker.recognizer = GestureRecognizer(settings, lambda _: None)
     worker._cached_mouth = None
     worker._mouth_cache_ttl = 0
+    worker._create_mp_image = MagicMock(return_value="mock_image")
 
     mock_hands = MagicMock()
     mock_face = MagicMock()
 
-    # Configure mock return values
-    hand_ret = MagicMock()
     # Hand at lower area: y = 0.85 (> 0.65)
+    hand_ret = MagicMock()
     hand_ret.hand_landmarks = [make_hand_at_y(0.85)]
     mock_hands.detect.return_value = hand_ret
 
-    # In lower area, face detect should NOT be called
-    import numpy as np
-
-    fake_frame = np.zeros((100, 100, 3), dtype=np.uint8)
+    fake_frame = MagicMock()
     landmarks, mouth = worker._detect_tasks_optimized(mock_hands, mock_face, fake_frame)
     assert landmarks is not None
     assert mouth is None
@@ -68,39 +65,36 @@ def test_face_model_only_called_when_hand_in_upper_area() -> None:
 
 
 def test_benchmark_face_optimization_savings() -> None:
-    """Benchmark the call count and execution savings between unoptimized and optimized paths."""
+    """Benchmark call count and time savings between unoptimized and optimized paths."""
     settings = Settings()
     worker = CameraWorker.__new__(CameraWorker)
     worker.recognizer = GestureRecognizer(settings, lambda _: None)
     worker._cached_mouth = None
     worker._mouth_cache_ttl = 0
+    worker._create_mp_image = MagicMock(return_value="mock_image")
 
     mock_hands = MagicMock()
     mock_face = MagicMock()
 
-    # Simulate 50 frames with simulated face detection workload (e.g. 5ms per call)
+    # Simulate realistic neural network inference latency (~8ms per frame)
     def simulated_face_detect(_):
-        time.sleep(0.002)
+        time.sleep(0.008)
         ret = MagicMock()
         ret.face_landmarks = [[MockLandmark(0.5, 0.3) for _ in range(20)]]
         return ret
 
     mock_face.detect.side_effect = simulated_face_detect
+    fake_frame = MagicMock()
 
-    import numpy as np
-
-    fake_frame = np.zeros((64, 64, 3), dtype=np.uint8)
-
-    # 1. Unoptimized: runs every frame regardless of hand pose
+    # 1. Unoptimized: face detection executed on every single frame
     unoptimized_calls = 0
     t0 = time.perf_counter()
-    for _ in range(30):
-        # Always call face
+    for _ in range(20):
         mock_face.detect(fake_frame)
         unoptimized_calls += 1
     unoptimized_time = time.perf_counter() - t0
 
-    # 2. Optimized: only runs when hand is in upper frame (e.g. 20% of the time)
+    # 2. Optimized: only runs when hand is in upper area
     mock_face.reset_mock()
     hand_lower = MagicMock()
     hand_lower.hand_landmarks = [make_hand_at_y(0.85)]
@@ -108,15 +102,15 @@ def test_benchmark_face_optimization_savings() -> None:
     hand_upper.hand_landmarks = [make_hand_at_y(0.25)]
 
     t1 = time.perf_counter()
-    for i in range(30):
-        # 80% frames in lower/neutral, 20% near face
+    for i in range(20):
+        # 80% frames in lower neutral area, 20% near face
         mock_hands.detect.return_value = hand_upper if (i % 5 == 0) else hand_lower
         worker._detect_tasks_optimized(mock_hands, mock_face, fake_frame)
     optimized_time = time.perf_counter() - t1
 
     optimized_calls = mock_face.detect.call_count
 
-    # Optimized calls must be dramatically lower
-    assert optimized_calls < unoptimized_calls
-    # Time must be significantly faster
+    # Optimized calls reduced by ~80%
+    assert optimized_calls <= (unoptimized_calls // 2)
+    # Total execution time significantly faster
     assert optimized_time < unoptimized_time

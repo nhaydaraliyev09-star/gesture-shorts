@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [Unreleased]
 
+### Phase 4: Optional Browser Bridge
+- **Local WebSocket Bridge Server**: Built a lightweight, secure RFC 6455 WebSocket server (`gesture_shorts/bridge.py`) running strictly on `127.0.0.1` using Python's standard library (no extra pip dependencies). Enforces random per-session token authentication and origin checks.
+- **Manifest V3 Browser Extension**: Created a minimal Chrome/Edge/Brave extension (`extension/`) that directly manipulates active `<video>` elements (play, pause, mute, scroll navigation) and streams actual playback and volume states back to the application.
+- **Dual Dispatch Mode**: Updated `PlatformAdapter` to route gestures directly to the connected extension and automatically fall back to OS-level `pynput` keystrokes when disconnected. Both paths are fully tested.
+
 ### Phase 3: New Features
 - **3.1 Window Focus Safety Guard**: Before injecting any keyboard shortcut, `WindowFocusChecker` inspects the active foreground window title (using `ctypes` on Windows, `osascript` on macOS, and `xdotool` on Linux X11). Gestures are suppressed with a status message ("Gesture ignored: browser not focused") unless the target platform (YouTube / TikTok / Instagram) is active. Configurable via `require_browser_focus` (default `true`).
 - **3.2 Activation Pose (Arm/Disarm)**: Added deliberate open-palm activation pose (held ~1.0 s) to toggle armed/disarmed states. When disarmed, all navigation gestures are safely disabled to prevent accidental triggers while talking or moving. Includes auto-disarm timer (`auto_disarm_seconds`, default 20 s) and mode selection (`activation_mode`: `"pose"` vs `"always"`).
